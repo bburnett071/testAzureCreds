@@ -25,65 +25,12 @@ bool isJournalValid(std::vector<Transaction> *transactions){
   return valid;
 }
 
-int main(){
+typedef std::map<int, int> AccountBalanceMap;
+typedef std::map<int, Account> AccountMap;
+typedef std::map<int, std::vector<Entry*>> AccountJournalMap;
 
-  //open the GL accounts file
-  std::ifstream f_accounts("./data/accounts.tsv");
-  if(!f_accounts){
-    std::cout<<"Unable to read accounts.tsv"<<std::endl;
-    return -1;
-  }
-
-  //read the accounts and sort into a vector
-  Account account;
-  std::map<int, Account> accounts;
-  while(f_accounts >> account){
-    accounts[account.number] =account;
-  }
-
-  //read the transaciton file
-  std::ifstream f_transactions("./data/test.txn");
-  if(!f_transactions){
-    std::cout<<"Unable to read test.txn"<<std::endl;
-    return -2;
-  }
-
-  Transaction txn;
-  std::vector<Transaction> transactions;
-  //use our custom stream parsing to extract transactions from the file
-  while(f_transactions >> txn){
-    transactions.emplace_back(txn);
-  }
-
-  //validate the transactions
-  if(!isJournalValid(&transactions)){
-    return -3;
-  }
-
-  //process the full journal
-  std::map<int, std::vector<Entry*>> fullJournal;
-  //keep date based snapshots too
-  std::map<std::string, std::map<int, std::vector<Entry*>>> trialJournal;
-  //find the starting date
-  std::string day = transactions[0].date;
-  trialJournal[day] = std::map<int, std::vector<Entry*>>{};
-  //process all the transactions
-  std::for_each( transactions.begin(), transactions.end(), [&fullJournal, &trialJournal, &day](Transaction &t){
-    if (t.date.compare(day) != 0){
-      //found a new day, start a new incremental group
-      day = t.date;
-      trialJournal[day] = std::map<int, std::vector<Entry*>>{};
-    }
-
-    //normal processing...
-    std::for_each(t.entries.begin(), t.entries.end(), [&fullJournal, &trialJournal, &day](Entry &e){
-      fullJournal[e.accountNumber].emplace_back(&e);
-      trialJournal[day][e.accountNumber].emplace_back(&e);
-    });
-  });
-
-  //process the balance sheet and trial balance for the full period and each day
-  std::map<int, int> balance;
+AccountBalanceMap calculateBalance(const AccountMap accounts, AccountJournalMap entries){
+  AccountBalanceMap balance;
   for (auto const &[key, val]: accounts){
     int d = 1, c = 1;
     int sum = 0;
@@ -100,14 +47,15 @@ int main(){
         c = 1;
     }
 
-    //TODO: changing this line to loop over the full vs incrementals would allow re-using the rest of the logic?
-    std::for_each(fullJournal[key].begin(), fullJournal[key].end(), [&sum, &d, &c](Entry* e){
+    std::for_each(entries[key].begin(), entries[key].end(), [&sum, &d, &c](Entry* e){
       sum += e->debit ? d * e->amountCents : c * e->amountCents;
     });
     balance[key] = sum;
   }
+  return balance;
+}
 
-  //Balance Sheet shows Assets, less Liabilities and Expenses
+void printBalanceSheet(const AccountMap accounts, AccountBalanceMap balance){
   int totals[3]{0,0,0};
   AccountType loop[]{ AccountType::asset, AccountType::liability, AccountType::expense };
   int index = 0;
@@ -135,7 +83,9 @@ int main(){
     }
   }
   std::cout<<"Total Liabilities and Equity: "<<totals[1] + totals[2]<<std::endl;
+}
 
+void printTrialBalance(const AccountMap accounts, AccountJournalMap entries){
   //Trial Balance
   std::cout<<std::endl;
   std::cout<<"*******************************"<<std::endl;
@@ -145,7 +95,7 @@ int main(){
   int debitTotal = 0, creditTotal = 0;
   for (auto const &[key, val]: accounts){
     int debits = 0, credits = 0;
-    std::for_each(fullJournal[key].begin(), fullJournal[key].end(), [&debits, &credits](Entry* e){
+    std::for_each(entries[key].begin(), entries[key].end(), [&debits, &credits](Entry* e){
         if( e->debit) {
           debits += e->amountCents;
         } else {
@@ -160,33 +110,71 @@ int main(){
     std::cout<<key<<" "<<std::setw(40)<<val.name<<"\t"<<std::setw(15)<<debits<<"\t"<<credits<<std::endl;
   }
   std::cout<<std::setw(63)<<debitTotal<<"\t"<<creditTotal<<std::endl;
+}
 
-  /*
-  //P&L
-  int plTotals[2]{0,0};
-  AccountType plLoop[]{ AccountType::revenue, AccountType::expense };
-  std::cout<<std::endl;
-  std::cout<<"*******************************"<<std::endl;
-  std::cout<<"** P&L                      ***"<<std::endl;
-  std::cout<<"*******************************"<<std::endl;
-  std::cout<<"Income"<<std::endl;
-  while(index < 2){
-    auto filter = plLoop[index];
-    for (auto const &[key, val]: accounts){
-      if( val.type != filter || balance[key] == 0){
-        continue;
-      }
-      std::cout<<val.number<<std::setw(40)<<val.name<<"\t"<<balance[key]<<std::endl;
-      totals[index] += balance[key];
-    }
+int main(){
 
-    std::cout<<"Total:\t"<<totals[index]<<std::endl;
-    std::cout<<std::endl;
-    index += 1;
-    if(index == 1) {
-      std::cout<<"Expenses"<<std::endl;
-    }
+  //open the GL accounts file
+  std::ifstream f_accounts("./data/accounts.tsv");
+  if(!f_accounts){
+    std::cout<<"Unable to read accounts.tsv"<<std::endl;
+    return -1;
   }
-  std::cout<<std::setw(45)<<"Net Income:\t"<<plTotals[0] - plTotals[1]<<std::endl;
-  */
+
+  //read the accounts and sort into a vector
+  Account account;
+  AccountMap accounts;
+  while(f_accounts >> account){
+    accounts[account.number] =account;
+  }
+
+  //read the transaciton file
+  std::ifstream f_transactions("./data/test.txn");
+  if(!f_transactions){
+    std::cout<<"Unable to read test.txn"<<std::endl;
+    return -2;
+  }
+
+  Transaction txn;
+  std::vector<Transaction> transactions;
+  //use our custom stream parsing to extract transactions from the file
+  while(f_transactions >> txn){
+    transactions.emplace_back(txn);
+  }
+
+  //validate the transactions
+  if(!isJournalValid(&transactions)){
+    return -3;
+  }
+
+  //process the full journal
+  AccountJournalMap fullJournal;
+  //keep date based snapshots too
+  std::map<std::string, AccountJournalMap> trialJournal;
+  //find the starting date
+  std::string day = transactions[0].date;
+  trialJournal[day] = AccountJournalMap{};
+  //process all the transactions
+  std::for_each( transactions.begin(), transactions.end(), [&fullJournal, &trialJournal, &day](Transaction &t){
+    if (t.date.compare(day) != 0){
+      //found a new day, start a new incremental group
+      day = t.date;
+      trialJournal[day] = std::map<int, std::vector<Entry*>>{};
+    }
+
+    //normal processing...
+    std::for_each(t.entries.begin(), t.entries.end(), [&fullJournal, &trialJournal, &day](Entry &e){
+      fullJournal[e.accountNumber].emplace_back(&e);
+      trialJournal[day][e.accountNumber].emplace_back(&e);
+    });
+  });
+
+  //process the balance sheet and trial balance for the full period
+  auto balance = calculateBalance(accounts, fullJournal);
+
+  //TODO: and now process per day
+
+  //Balance Sheet shows Assets, less Liabilities and Expenses
+  printBalanceSheet(accounts, balance);
+  printTrialBalance(accounts, fullJournal);
 }
