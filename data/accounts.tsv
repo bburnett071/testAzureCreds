@@ -1,0 +1,83 @@
+10010	Cash - Subsidiaries	Asset
+10200	Pfs Dealer Gift Cards	Asset
+11210	Sec Natl Bank - Pfs	Asset
+11215	Us Bank - Pfs Escrow	Asset
+11220	Signature - Pfs Wire	Asset
+11230	Signature - Pfs Lease	Asset
+11240	Signature - Pfs Ach	Asset
+11280	Signature - Pfs Security Dep	Asset
+11500	Fed Reserve Bank - Minneapolis	Asset
+14140	Operating Leases	Asset
+14170	Operating Leases - Accum Depr	Asset
+14190	Operatng Lease - Revenue Accrl	Asset
+14710	Financing Leases	Asset
+14730	Financing Lease - Unearned Rev	Asset
+14740	Financing Lease - Revenue Accr	Asset
+14750	Financing Lease - Residual	Asset
+14770	Financing Leases - Fv Adjust	Asset
+14780	Fasb 91 Defd Acq Fees Financin	Asset
+14785	Fasb 91 Defd Acq Fees Operatin	Asset
+14790	Fasb 91 Defd Lease Exp Financi	Asset
+14795	Fasb 91 Defd Lease Exp Operati	Asset
+19170	Funding Suspense	Asset
+19140	Pfs - Aspire Suspense	Asset
+19360	Pfs Vehicle Inventory	Asset
+19770	Accts Recvble - Pfs	Asset
+20810	Dda - Cash In Pfs	Liability
+26500	Residual Defrayment Fees	Liability
+26550	Interest Defrayment Fees	Liability
+26700	Dmv Fees Payable	Liability
+27000	Accrued Expenses	Liability
+27215	Security Deposit Payable	Liability
+27250	Lease Pmts Recd Not Applied	Liability
+27308	Accrued Sales Tax Payble - Pfs	Liability
+27315	Accrued Personal Prop Tax Pay	Liability
+27350	Pfs Accrued Commissions	Liability
+27500	Unclaimed Property Payable	Liability
+30950	Other Direct Lease Costs	Expense
+30960	Depreciation Expense - Lease	Expense
+31660	Pfs Commissions - Other	Expense
+32900	Fas 91 Salary Expense	Expense
+33100	Building Repairs & Maintenance	Expense
+33300	Building Rent	Expense
+33500	Real Estate Taxes	Expense
+33600	Utilities	Expense
+33700	Janitorial	Expense
+33800	Equipment Repairs & Maint	Expense
+33850	Equipment (Less Than $5,000)	Expense
+34000	Equipment Rentals	Expense
+34100	Advertising	Expense
+34200	Legal Fees	Expense
+34300	Professional Fees	Expense
+34306	Consulting Services	Expense
+34600	Filing Fees	Expense
+34701	Bank Charges	Expense
+34800	Travel & Accomodations	Expense
+34900	Meals & Entertainment	Expense
+34903	Bankwide Events	Expense
+35000	Seminars & Conventions	Expense
+35100	Dues & Subscriptions	Expense
+35200	Supplies & Printing	Expense
+35302	Cell Phones/Pagers	Expense
+35400	Donations - Tax Deductible	Expense
+35600	Other Insurance And Bonds	Expense
+35700	Postage	Expense
+35830	Non-Income State Taxes	Expense
+36015	Amortization Exp - Intangible	Expense
+36016	Amortization Exp - Goodwill	Expense
+36300	Miscellaneous Expense	Expense
+38300	Data Processing Expense - Oth	Expense
+39500	Penalties - Non Deductible	Expense
+41550	Defrayed Interest Income	Revenue
+41560	Financing Lease Interest Incom	Revenue
+43330	Financing Lease Amort Fasb 91	Revenue
+43340	Operating Lease Amort Fasb 91	Revenue
+43900	Miscellaneous Income	Revenue
+48100	Operating Lease - 1st Mos Pmt	Revenue
+48110	Operating Lease Revenue	Revenue
+48300	Management Advisory Income	Revenue
+48310	Management Advisory Gain	Revenue
+48400	Gain On Sale Off Lease Vehicle	Revenue
+48500	Pre Acquisition Lease Recoveri	Revenue
+48550	Credit Mark Release - Fin Ls	Revenue
+48560	Credit Mark Release - Op Ls	Revenue
