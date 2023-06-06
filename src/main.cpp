@@ -112,10 +112,10 @@ void printBalanceSheet(const AccountMap accounts, AccountBalanceMap balance){
     if(index == 1) {
       std::cout<<"Liabilities"<<std::endl;
     } else if( index == 2) {
-      std::cout<<"Expenses"<<std::endl;
+      std::cout<<"Equity"<<std::endl;
     }
   }
-  std::cout<<"Total Liabilities and Equity: "<<totals[1] + totals[2]<<std::endl;
+  std::cout<<"Total Liabilities and Equity: "<<currency(totals[1] + totals[2])<<std::endl;
 }
 
 void printTrialBalance(const AccountMap accounts, AccountJournalMap entries){
