@@ -8,13 +8,13 @@
 #include <vector>
 #include <map>
 
-bool isJournalValid(std::vector<Transaction> *transactions){
+bool isJournalValid(const std::vector<Transaction> &transactions){
   bool valid = true;
   //validate the transactions
-  std::for_each( transactions->begin(), transactions->end(), [&valid](Transaction &t){
+  std::for_each( transactions.begin(), transactions.end(), [&valid](const Transaction &t){
     //confirm the debits and credits are in balance
     int sum = 0;
-    std::for_each( t.entries.begin(), t.entries.end(), [&sum](Entry &e){
+    std::for_each( t.entries.begin(), t.entries.end(), [&sum](const Entry &e){
       sum += e.amountCents * (e.debit ? 1 : -1);
     });
     if (sum != 0) {
@@ -29,7 +29,7 @@ typedef std::map<int, int> AccountBalanceMap;
 typedef std::map<int, Account> AccountMap;
 typedef std::map<int, std::vector<Entry*>> AccountJournalMap;
 
-AccountBalanceMap calculateBalance(const AccountMap accounts, AccountJournalMap entries){
+AccountBalanceMap calculateBalance(const AccountMap& accounts, AccountJournalMap entries){
   AccountBalanceMap balance;
   for (auto const &[key, val]: accounts){
     int d = 1, c = 1;
@@ -88,7 +88,7 @@ std::string currency(int cents){
   return t;
 }
 
-void printBalanceSheet(const AccountMap accounts, AccountBalanceMap balance){
+void printBalanceSheet(const AccountMap &accounts, const AccountBalanceMap &balance){
   int totals[3]{0,0,0};
   AccountType loop[]{ AccountType::asset, AccountType::liability, AccountType::expense };
   int index = 0;
@@ -99,11 +99,11 @@ void printBalanceSheet(const AccountMap accounts, AccountBalanceMap balance){
   while(index < 3){
     auto filter = loop[index];
     for (auto const &[key, val]: accounts){
-      if( val.type != filter || balance[key] == 0){
+      if( val.type != filter || balance.at(key) == 0){
         continue;
       }
-      std::cout<<val.number<<std::setw(40)<<val.name<<"\t"<<currency(balance[key])<<std::endl;
-      totals[index] += balance[key];
+      std::cout<<val.number<<std::setw(40)<<val.name<<"\t"<<currency(balance.at(key))<<std::endl;
+      totals[index] += balance.at(key);
     }
 
     std::cout<<std::setw(45)<<"Total:\t"<<currency(totals[index])<<std::endl;
@@ -118,7 +118,7 @@ void printBalanceSheet(const AccountMap accounts, AccountBalanceMap balance){
   std::cout<<"Total Liabilities and Equity: "<<currency(totals[1] + totals[2])<<std::endl;
 }
 
-void printTrialBalance(const AccountMap accounts, AccountJournalMap entries){
+void printTrialBalance(const AccountMap &accounts, AccountJournalMap &entries){
   //Trial Balance
   std::cout<<std::endl;
   std::cout<<"*******************************"<<std::endl;
@@ -182,7 +182,7 @@ int main(int argc, char** argv){
   }
 
   //validate the transactions
-  if(!isJournalValid(&transactions)){
+  if(!isJournalValid(transactions)){
     return -3;
   }
 
