@@ -155,8 +155,17 @@ int main(){
   std::string day = transactions[0].date;
   trialJournal[day] = AccountJournalMap{};
   //process all the transactions
-  std::for_each( transactions.begin(), transactions.end(), [&fullJournal, &trialJournal, &day](Transaction &t){
+  std::for_each( transactions.begin(), transactions.end(), [&fullJournal, &trialJournal, &day, &accounts](Transaction &t){
     if (t.date.compare(day) != 0){
+
+      std::cout<<"------------------------------------------------------------------"<<std::endl;
+      std::cout<<"-- END OF DAY:"<<day<<std::endl;
+      std::cout<<"------------------------------------------------------------------"<<std::endl;
+
+      auto balance = calculateBalance(accounts, fullJournal);
+      printBalanceSheet(accounts, balance);
+      printTrialBalance(accounts, fullJournal);
+
       //found a new day, start a new incremental group
       day = t.date;
       trialJournal[day] = std::map<int, std::vector<Entry*>>{};
@@ -169,12 +178,12 @@ int main(){
     });
   });
 
+  std::cout<<"------------------------------------------------------------------"<<std::endl;
+  std::cout<<"-- FINAL: "<<day<<std::endl;
+  std::cout<<"------------------------------------------------------------------"<<std::endl;
+
   //process the balance sheet and trial balance for the full period
   auto balance = calculateBalance(accounts, fullJournal);
-
-  //TODO: and now process per day
-
-  //Balance Sheet shows Assets, less Liabilities and Expenses
   printBalanceSheet(accounts, balance);
   printTrialBalance(accounts, fullJournal);
 }
