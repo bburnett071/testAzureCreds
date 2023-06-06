@@ -193,7 +193,7 @@ int main(){
     if (t.date.compare(day) != 0){
 
       std::cout<<"------------------------------------------------------------------"<<std::endl;
-      std::cout<<"-- END OF DAY:"<<day<<std::endl;
+      std::cout<<"-- END OF DAY: "<<day<<std::endl;
       std::cout<<"------------------------------------------------------------------"<<std::endl;
 
       auto balance = calculateBalance(accounts, fullJournal);
