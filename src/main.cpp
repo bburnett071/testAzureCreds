@@ -146,7 +146,7 @@ void printTrialBalance(const AccountMap accounts, AccountJournalMap entries){
 }
 
 
-int main(){
+int main(int argc, char** argv){
 
   //open the GL accounts file
   std::ifstream f_accounts("./data/accounts.tsv");
@@ -162,10 +162,15 @@ int main(){
     accounts[account.number] =account;
   }
 
+  std::string txnFile{"./data/test.txn"};
+  if (argc > 1){
+    txnFile = argv[1];
+  }
+
   //read the transaciton file
-  std::ifstream f_transactions("./data/test.txn");
+  std::ifstream f_transactions(txnFile);
   if(!f_transactions){
-    std::cout<<"Unable to read test.txn"<<std::endl;
+    std::cout<<"Unable to read "<<txnFile<<std::endl;
     return -2;
   }
 
