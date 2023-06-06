@@ -55,6 +55,39 @@ AccountBalanceMap calculateBalance(const AccountMap accounts, AccountJournalMap 
   return balance;
 }
 
+std::string currency(int cents){
+
+  std::string t = std::to_string(cents);
+  bool negative = cents < 0;
+
+  if(negative){
+    //remove the leading minus sign
+    t = t.erase(0, 1);
+  }
+
+  if(t.size() == 1){
+    t = t.insert(0, "$0.0");
+  } else if(t.size() == 2){
+    t = t.insert(0, "$0.");
+  } else {
+    t = t.insert(t.size() - 2, ".");
+    int pos = t.size() - 3;
+    for(int i = pos; i > 0; i--){
+      if( (pos-i) % 3 == 0 && pos-i > 0 ){
+        t = t.insert(i, ",");
+      }
+    }
+    t = t.insert(0, "$");
+
+    if (negative){
+      t = t.insert(0, "(");
+      t = t.append(")");
+    }
+  }
+
+  return t;
+}
+
 void printBalanceSheet(const AccountMap accounts, AccountBalanceMap balance){
   int totals[3]{0,0,0};
   AccountType loop[]{ AccountType::asset, AccountType::liability, AccountType::expense };
@@ -69,11 +102,11 @@ void printBalanceSheet(const AccountMap accounts, AccountBalanceMap balance){
       if( val.type != filter || balance[key] == 0){
         continue;
       }
-      std::cout<<val.number<<std::setw(40)<<val.name<<"\t"<<balance[key]<<std::endl;
+      std::cout<<val.number<<std::setw(40)<<val.name<<"\t"<<currency(balance[key])<<std::endl;
       totals[index] += balance[key];
     }
 
-    std::cout<<std::setw(45)<<"Total:\t"<<totals[index]<<std::endl;
+    std::cout<<std::setw(45)<<"Total:\t"<<currency(totals[index])<<std::endl;
     std::cout<<std::endl;
     index += 1;
     if(index == 1) {
@@ -107,10 +140,11 @@ void printTrialBalance(const AccountMap accounts, AccountJournalMap entries){
     }
     debitTotal += debits;
     creditTotal += credits;
-    std::cout<<key<<" "<<std::setw(40)<<val.name<<"\t"<<std::setw(15)<<debits<<"\t"<<credits<<std::endl;
+    std::cout<<key<<" "<<std::setw(40)<<val.name<<"\t"<<std::setw(15)<<currency(debits)<<"\t"<<currency(credits)<<std::endl;
   }
-  std::cout<<std::setw(63)<<debitTotal<<"\t"<<creditTotal<<std::endl;
+  std::cout<<std::setw(63)<<currency(debitTotal)<<"\t"<<currency(creditTotal)<<std::endl;
 }
+
 
 int main(){
 
