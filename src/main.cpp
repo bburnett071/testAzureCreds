@@ -29,8 +29,8 @@ typedef std::map<int, int> AccountBalanceMap;
 typedef std::map<int, Account> AccountMap;
 typedef std::map<int, std::vector<Entry*>> AccountJournalMap;
 
-AccountBalanceMap calculateBalance(const AccountMap& accounts, AccountJournalMap entries){
-  AccountBalanceMap balance;
+std::unique_ptr<AccountBalanceMap> calculateBalance(const AccountMap& accounts, AccountJournalMap entries){
+  std::unique_ptr<AccountBalanceMap> balance = std::make_unique<AccountBalanceMap>();
   for (auto const &[key, val]: accounts){
     int d = 1, c = 1;
     int sum = 0;
@@ -50,7 +50,7 @@ AccountBalanceMap calculateBalance(const AccountMap& accounts, AccountJournalMap
     std::for_each(entries[key].begin(), entries[key].end(), [&sum, &d, &c](Entry* e){
       sum += e->debit ? d * e->amountCents : c * e->amountCents;
     });
-    balance[key] = sum;
+    (*balance)[key] = sum;
   }
   return balance;
 }
@@ -88,7 +88,7 @@ std::string currency(int cents){
   return t;
 }
 
-void printBalanceSheet(const AccountMap &accounts, const AccountBalanceMap &balance){
+void printBalanceSheet(const AccountMap &accounts, const std::unique_ptr<AccountBalanceMap>& balance){
   int totals[2]{0,0};
   AccountType loop[]{ AccountType::asset, AccountType::liability };
   int index = 0;
@@ -99,11 +99,11 @@ void printBalanceSheet(const AccountMap &accounts, const AccountBalanceMap &bala
   while(index < 2){
     auto filter = loop[index];
     for (auto const &[key, val]: accounts){
-      if( val.type != filter || balance.at(key) == 0){
+      if( val.type != filter || balance->at(key) == 0){
         continue;
       }
-      std::cout<<val.number<<std::setw(40)<<val.name<<"\t"<<currency(balance.at(key))<<std::endl;
-      totals[index] += balance.at(key);
+      std::cout<<val.number<<std::setw(40)<<val.name<<"\t"<<currency(balance->at(key))<<std::endl;
+      totals[index] += balance->at(key);
     }
 
     std::cout<<std::setw(45)<<"Total:\t"<<currency(totals[index])<<std::endl;
