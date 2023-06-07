@@ -89,14 +89,14 @@ std::string currency(int cents){
 }
 
 void printBalanceSheet(const AccountMap &accounts, const AccountBalanceMap &balance){
-  int totals[3]{0,0,0};
-  AccountType loop[]{ AccountType::asset, AccountType::liability, AccountType::expense };
+  int totals[2]{0,0};
+  AccountType loop[]{ AccountType::asset, AccountType::liability };
   int index = 0;
   std::cout<<"*******************************"<<std::endl;
   std::cout<<"** BALANCE SHEET            ***"<<std::endl;
   std::cout<<"*******************************"<<std::endl;
   std::cout<<"Assets"<<std::endl;
-  while(index < 3){
+  while(index < 2){
     auto filter = loop[index];
     for (auto const &[key, val]: accounts){
       if( val.type != filter || balance.at(key) == 0){
@@ -111,11 +111,8 @@ void printBalanceSheet(const AccountMap &accounts, const AccountBalanceMap &bala
     index += 1;
     if(index == 1) {
       std::cout<<"Liabilities"<<std::endl;
-    } else if( index == 2) {
-      std::cout<<"Equity"<<std::endl;
     }
   }
-  std::cout<<"Total Liabilities and Equity: "<<currency(totals[1] + totals[2])<<std::endl;
 }
 
 void printTrialBalance(const AccountMap &accounts, AccountJournalMap &entries){

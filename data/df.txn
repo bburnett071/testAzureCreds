@@ -22,13 +22,18 @@
 ^
 2022-02-21
 :Sales Commission
-  11240 D 7177.36
+  31660 D 7177.36
   27350 C 7177.36
 ^
 2022-03-01
 :FASB Recording
   32900 C 7177.36
   14790 D 7177.36
+^
+2022-03-01
+:Sales Commission Paid
+  11240 C 7177.36
+  27350 D 7177.36
 ^
 2022-03-01
 :DMV Fee manually paid
